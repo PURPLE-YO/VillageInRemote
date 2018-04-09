@@ -312,11 +312,8 @@ class Server:
             self.updated_data = self.match_interest(input_df, self.match_df)
 
         # filter the dataframe to exclude the items not interested (Cat of int, is corresponding to the UNSPSC Title NOT Agency)
-        # print(self.updated_data.shape)
-        # print(self.updated_data.head(1))  correct
-
-        godP = self.updated_data['Filter UNSPSC of Interest'] == 'Categories of Interest'
-        data_interest = self.updated_data[godP==True]
+        interest_check = self.updated_data['Filter UNSPSC of Interest'] == 'Categories of Interest'
+        data_interest = self.updated_data[interest_check == True]
 #        print(data_interest.shape)
        
         # show all the category
