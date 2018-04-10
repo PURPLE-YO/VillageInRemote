@@ -155,5 +155,9 @@ if __name__ == '__main__':
     from Server import Server
     s = Server()
     c.upload_file("/Users/NAN/Desktop/Qt Project/All_data.csv")
-    s.visual_q2(c.cleaned_Dataframe)
+    # question 1
+    df = s.visual_q2(c.cleaned_Dataframe) # total included in rows which records sum value of a category
+    df_sum = df[df['Agency Name']=='Total']    
+    df_sum['Value'].plot(kind='barh')
+
 

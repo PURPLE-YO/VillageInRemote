@@ -297,8 +297,7 @@ class Server:
                 print('Wrong type data')
             except KeyError:
                 print('Key not found')
-            return listAgency
-
+        return listAgency, category_name
             
 
     def match_interest(self, input_df, match_with):
@@ -315,28 +314,45 @@ class Server:
         interest_check = self.updated_data['Filter UNSPSC of Interest'] == 'Categories of Interest'
         data_interest = self.updated_data[interest_check == True]
 #        print(data_interest.shape)
-       
+        
+        summary_df = pd.DataFrame() # create an empty df to concat created pivot tables
+        
         # show all the category
-#        for category in self.catByAgency.keys():
-#            agency = self.catByAgency.get(category)
-#            funding = data_interest.loc[self.updated_data['Agency Name'].isin(agency)]
-#            # group by agency name and sort in descend order
-#            top_funding = pd.pivot_table(funding, index='Agency Name', values='Value', aggfunc=np.sum) \
-#                 .sort_values(by='Value', ascending=False)
-#            top_funding.loc['Total'] = top_funding['Value'].sum()
+        for category in self.catByAgency.keys():
+            agency = self.catByAgency.get(category)
+            funding = data_interest.loc[self.updated_data['Agency Name'].isin(agency)]
+            # group by agency name and sort in descend order
+            top_funding = pd.pivot_table(funding, index='Agency Name', values='Value', aggfunc=np.sum) \
+                 .sort_values(by='Value', ascending=False)
+            top_funding.loc['Total'] = top_funding['Value'].sum() # add one row in the bottom to sum up the values
+            top_funding.reset_index(level=0,inplace=True) # reset the index instead of using Agency name as index
+            top_funding['Category Name'] = category
 #            print(top_funding)
+#            print(type(top_funding))
+           
+            summary_df = pd.concat([summary_df,top_funding]).reset_index(drop=True)
+            
+#        print(summary_df)
+        return summary_df # get the final concat df, which labelled by category
+#            
+#        return top_funding
 
-#        # return agency list under the category
-        agency = self.category_agency()
-        funding = data_interest.loc[input_df['Agency Name'].isin(agency)] 
+##### with same col df, use pd.concat([list of df]).reset_index(drop=True) to make concatenation
 
-         # group by agency name and sort in descend order (DataFrame)
-        top_funding = pd.pivot_table(funding, index='Agency Name', values='Value', aggfunc=np.sum, margins=True,margins_name='Total_Sum') \
-             .sort_values(by='Value', ascending=False)
-        top_funding.loc['Total'] = top_funding['Value'].sum()
-         # return top_funding # return sth to client
-        print(top_funding)
-    
+
+#        # return agency list under the category, and the category name of interest
+#        agency, category_name = self.category_agency()
+#        funding = data_interest.loc[input_df['Agency Name'].isin(agency)] 
+#
+#         # group by agency name and sort in descend order (DataFrame)
+#        top_funding = pd.pivot_table(funding, index='Agency Name', values='Value', aggfunc=np.sum) \
+#             .sort_values(by='Value', ascending=False)
+#        print(type(top_funding))
+#        top_funding.loc['Total'] = top_funding['Value'].sum()
+#        top_funding['Category of Interest'] = category_name
+#         # return top_funding # return sth to client
+##        print(top_funding)
+#        return top_funding
     
     # # question 1    
     # def visual_q1(self,input_df):
