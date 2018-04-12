@@ -7,6 +7,10 @@ Created on Wed Apr  4 19:20:26 2018
 
 import pandas as pd 
 import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
+import plotly.plotly
+
 
 class Client:
        
@@ -155,9 +159,12 @@ if __name__ == '__main__':
     from Server import Server
     s = Server()
     c.upload_file("/Users/NAN/Desktop/Qt Project/All_data.csv")
-    # question 1
-    df = s.visual_q2(c.cleaned_Dataframe) # total included in rows which records sum value of a category
-    df_sum = df[df['Agency Name']=='Total']    
-    df_sum['Value'].plot(kind='barh')
+    
+    # question1: How much funding is available in the target categories? (Total, by category, over time)
+    s.visual_q1(c.cleaned_Dataframe) # total included in rows which records sum value of a category
+    
+    # question2&3: Which are the top funding agencies in each category? 
+    s.visual_q2_q3(c.cleaned_Dataframe)
 
-
+    # quesiton5: What kinds or types of projects are receiving the most funding?   based on [UNSPSC Title]
+    

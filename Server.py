@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+import plotly.plotly as py
+import plotly.graph_objs as go
+import plotly.plotly
+
 
 class Server:
     # doc stored in the server for basic structure
@@ -304,8 +308,9 @@ class Server:
         new_df = input_df.merge(match_with, left_on = 'UNSPSC Title', right_index = True).reset_index()
         return new_df
 
-
-    def visual_q2(self, input_df):
+    
+        # question: How much funding is available in the target categories? (Total, by category, over time)
+    def visual_q1(self, input_df):
         if 'Filter UNSPSC of Interest' not in list(input_df):
             # updated file after add Category of Interest
             self.updated_data = self.match_interest(input_df, self.match_df)
@@ -331,11 +336,16 @@ class Server:
 #            print(type(top_funding))
            
             summary_df = pd.concat([summary_df,top_funding]).reset_index(drop=True)
+        df_sum = summary_df[summary_df['Agency Name']=='Total']    
+        df_sum.reset_index(level=0,inplace=True) # reset the index of the df_sum 
+        
+        trace1 = go.Bar(x=df_sum['Value'], y=df_sum['Category Name'], orientation='h',marker=dict(color='rgb(102,102,225)',\
+                    line=dict(color = 'rgb(8,48,107)',width=1.5,)), opacity=0.5,text=df_sum['Category Name'])
+        data1 = [trace1]
+        layout1 = go.Layout(title='Founding available in the traget categories')
+        fig1 = go.Figure(data=data1,layout=layout1)
+        plotly.offline.plot(fig1)
             
-#        print(summary_df)
-        return summary_df # get the final concat df, which labelled by category
-#            
-#        return top_funding
 
 ##### with same col df, use pd.concat([list of df]).reset_index(drop=True) to make concatenation
 
@@ -354,11 +364,34 @@ class Server:
 ##        print(top_funding)
 #        return top_funding
     
-    # # question 1    
-    # def visual_q1(self,input_df):
-    #     # return a dataframe with an addition column ['Category of Intresest'] -- ['Categories of Intresest','Rest of Categories']
-    #     self.updated_data = self.match_interest(input_df, self.match_df)
-    #     # print(self.updated_data.shape) # (698111, 36)
-    #    # print(list(self.updated_data)) # 'Filter UNSPSC of Interest' new column
+    # question: Which are the top funding agencies in each category?   
+    def visual_q2_q3(self,input_df):
+        if 'Filter UNSPSC of Interest' not in list(input_df):
+            # updated file after add Category of Interest
+            self.updated_data = self.match_interest(input_df, self.match_df)
 
+        # filter the dataframe to exclude the items not interested (Cat of int, is corresponding to the UNSPSC Title NOT Agency)
+        interest_check = self.updated_data['Filter UNSPSC of Interest'] == 'Categories of Interest'
+        data_interest = self.updated_data[interest_check == True]        
+        summary_df = pd.DataFrame() # create an empty df to concat created pivot tables         
+        for category in self.catByAgency.keys():
+            agency = self.catByAgency.get(category)
+            funding = data_interest.loc[self.updated_data['Agency Name'].isin(agency)]
+            # group by agency name and sort in descend order
+            top_funding = pd.pivot_table(funding, index='Agency Name', values='Value', aggfunc=np.sum) \
+                 .sort_values(by='Value', ascending=False)
+            top_funding.loc['Total'] = top_funding['Value'].sum() # add one row in the bottom to sum up the values
+            top_funding.reset_index(level=0,inplace=True) # reset the index instead of using Agency name as index
+            top_funding['Category Name'] = category
+            summary_df = pd.concat([summary_df,top_funding]).reset_index(drop=True)
+        
+        df_top = summary_df[summary_df['Agency Name']!='Total']
+        index_top = df_top.groupby(['Category Name'],sort=False)['Value'].transform(max)==df_top['Value']
+        df_top_agency = df_top[index_top]
+        trace2 = go.Bar(x=df_top_agency['Value'],y=df_top_agency['Category Name'],orientation='h',marker=dict(color='rgb(102,102,225)',\
+                        line=dict(color = 'rgb(8,48,107)',width=1.5,)), opacity=0.5,text=df_top_agency['Agency Name'])
+        data2 = [trace2]
+        layout2 = go.Layout(title='Top funding agencies in each category')
+        fig2 = go.Figure(data=data2,layout=layout2)
+        plotly.offline.plot(fig2)
        
