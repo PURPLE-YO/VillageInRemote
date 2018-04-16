@@ -1,7 +1,6 @@
 import pandas as pd
 import json
 import numpy as np
-
 from fuzzywuzzy import process
 
 # open csv file as dataframe
@@ -67,12 +66,13 @@ def unpack(fromUI):
         #     print(inst.args)  # arguments stored in .args
         #     print(inst)
 
+
 # match the keyword of supplier
 def supplier_match(key_word, dataframe):
     """
 
     @param dataframe: input datafram -> dataframe
-    @param key_word: input keyword -> str
+    @param key_word: input supplier keyword -> str
     @return: set of contract id
     """
     supplier_set = set()
@@ -110,13 +110,41 @@ def date_match(range, input_frame):
     return date_set
 
 
+def procurement_match(key_word, input_dataframe):
+    """
+    Procurement method has three options: Limited tender, Open tender, Prequalified tender
+
+    @param key_word: ticked option of procurement method
+    @param input_dataframe: uploaded datagrame
+    @return: filtered set
+    """
+    matched = input_dataframe[input_dataframe['Procurement Method'] == key_word]
+    matched_index = matched.index.tolist()
+    method_set = set(matched_index)
+    return method_set
+
+
+def category_match(key_word, input_dataframe):
+    category_set = set()
+    # give score benchmark as 70 to cut down not useful data
+    temp = process.extractBests(key_word, input_dataframe['UNSPSC Title'], limit=input_dataframe.shape[0], score_cutoff=70)
+    for item in temp:
+        category_set.add(item[2])
+    return category_set
+
+
 def find_match(keyword, input_frame):
     """
-
-
+    Apply all filters according to UI sent command
     @param keyword: dictionary -> {'column name': keyword}
     @return:
     """
+    date_index = set()
+    supplier_index = set()
+    method_index = set()
+    category_index = set()
+    other_index = set()
+    final = []
     for key, value in keyword.items():
         '''
         if key == "Date Range":
@@ -149,15 +177,62 @@ def find_match(keyword, input_frame):
 
         if key == "Date Range":
             range = value[0]
-            date_index = date_match(range, input_frame)
+            temp_set = date_match(range, input_frame)
+            date_index = temp_set
+            if len(date_index) != 0:
+                final.append(date_index)
 
-        if key == "Supplier Name":
-            supplier_index = set()
+        elif key == "Supplier Name":
+            # may have multiple words input in supplier
+            # supplier1 OR supplier2 OR ...
             for words in value:
                 temp_set = supplier_match(words, input_frame)
                 supplier_index |= temp_set
+            if len(supplier_index) != 0:
+                final.append(supplier_index)
+
+        elif key == 'Procurement Method':
+            # user may enter one or more options
+            for method in value:
+                temp_set = procurement_match(method, input_frame)
+                method_index |= temp_set
+            if len(method_index) != 0:
+                final.append(method_index)
+
+        elif key == 'Category':
+
+            # user may tick multiple categories
+            for words in value:
+                temp_set = category_match(words, input_frame)
+                category_index = category_index.union(temp_set)
+            if len(category_index) != 0:
+                final.append(category_index)
+        # "Panel Arrangement" or
+        # "Confidentiality Contract Flag" or
+        # "Confidentiality Outputs Flag" or
+        # "Consultancy Flag"
+        # only have two options of "yes/no"
+        elif key == ("Panel Arrangement" or "Confidentiality Contract Flag" or
+                   "Confidentiality Outputs Flag" or
+                    "Consultancy Flag"):
+            temp_set = input_frame[input_frame[key] == value]
+            # update the index
+            other_index |= temp_set
+            if len(other_index) != 0:
+                final.append(other_index)
+
+    consolidate = final[0]
+    for i in final:
+        print("a",len(i))
+        consolidate &= i
+    # convert set to list for json package
+    filtered = list(consolidate)
+    return filtered
 
 
-keyword = unpack("test.json")
-find_match(keyword, df)
+keyword = unpack("test2.json")
+output = find_match(keyword, df)
+print("output: ", len(output), output)
 
+output_json = json.dumps({"Contract ID":output,"UI Command":keyword})
+print(output_json)

@@ -1,0 +1,18 @@
+{"Source":"UI",
+  "Agency Name":[],
+  "Publish Date":[],
+  "Range":[{"Start Date":"2014-1-1","End Date":"2014-1-1"}],
+  "Value":[],
+  "Description":"",
+  "UNSPSC Code":"",
+  "UNSPSC Title":"", // 'category'(e.g health, economic)
+  "Procurement Method":"",
+  "Panel Arrangement":"",
+  "Confidentiality Contract Flag":"yes/no",
+  "Confidentiality Contract Reason":"",
+  "Confidentiality Outputs Flag":"yes/no",
+  "Confidentiality Outputs Reason":"",
+  "Consultancy Flag":"yes/no",
+  "Consultancy Reason":"",
+  "Supplier Name":"", // e.g university, IQ, LTD
+  "Supplier ABN":""}
