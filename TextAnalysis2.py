@@ -77,12 +77,16 @@ def supplier_match(key_word, input_dataframe):
     @param key_word: input supplier keyword -> str
     @return: set of contract id
     """
-    supplier_set = set()
+    supplier_list = []
     # process.extract -> list[(tuple),(tuple)]
-    score = process.extractBests(key_word, input_dataframe['Supplier Name'], score_cutoff=80, limit=input_dataframe.shape[0])
+    score = process.extractBests(key_word, input_dataframe['Supplier Name'], score_cutoff=80,
+                                 limit=input_dataframe.shape[0])
     for item in score:
-        supplier_set.add(item[2])
-    return supplier_set
+        supplier_list.append(item[2])
+    filtered_df = input_dataframe[input_dataframe.index == supplier_list]
+
+    # return dataframe after filtered
+    return filtered_df
 
 
 def date_match(dateRange, input_frame):
@@ -105,20 +109,19 @@ def date_match(dateRange, input_frame):
         end = np.datetime64(dateRange['End Date'])
         # mask target_time
         target_time = input_frame[(input_frame['Start Date'] <= end) & (input_frame['Start Date'] >= start)]
-    # store matched index in a list
-    date_match = target_time.index.tolist()
-    # convert list to set
-    date_set = set(date_match)
-    return date_set
+    # return filtered dataframe
+    return target_time
 
 
 def category_match(key_word, input_dataframe):
-    category_set = set()
+    category_list = []
     # give score benchmark as 70 to cut down not useful data
-    temp = process.extractBests(key_word, input_dataframe['UNSPSC Title'], limit=input_dataframe.shape[0], score_cutoff=70)
+    temp = process.extractBests(key_word, input_dataframe['UNSPSC Title'], limit=input_dataframe.shape[0],
+                                score_cutoff=70)
     for item in temp:
-        category_set.add(item[2])
-    return category_set
+        category_list.append(item[2])
+    filtered_df = input_dataframe.loc[category_list]
+    return filtered_df
 
 
 def procurement_match(key_word, input_dataframe):
@@ -130,9 +133,9 @@ def procurement_match(key_word, input_dataframe):
     @return: filtered set
     """
     matched = input_dataframe[input_dataframe['Procurement Method'] == key_word]
-    matched_index = matched.index.tolist()
-    method_set = set(matched_index)
-    return method_set
+    return matched
+
+
 # def value_match(range, input_dataframe):
 #     lower_bound = range['Low Bound']
 #     upper_bound = range['Upper Bound']
@@ -146,14 +149,7 @@ def find_match(keyword, input_frame):
     @param keyword: dictionary -> {'column name': keyword}
     @return:
     """
-    date_index = set()
-    supplier_index = set()
-    method_index = set()
-    category_index = set()
-    other_index = set()
-    final = []
-
-    final_index = set()
+    filtered_df = input_frame
     for key, value in keyword.items():
         '''
         if key == "Date Range":
@@ -186,36 +182,32 @@ def find_match(keyword, input_frame):
 
         if key == "Date Range":
             dateRange = value[0]
-            temp_set = date_match(dateRange, input_frame)
-            date_index = temp_set
-            if len(date_index) != 0:
-                final.append(date_index)
+            # return filtered Contract ID and dataframe after filter
+            filtered_df = date_match(dateRange, filtered_df)
+            # print("1", filtered_df.shape[0])
 
         elif key == "Supplier Name":
             # may have multiple words input in supplier
             # supplier1 OR supplier2 OR ...
+            temp = pd.DataFrame()
             for words in value:
-                temp_set = supplier_match(words, input_frame)
-                supplier_index |= temp_set
-            if len(supplier_index) != 0:
-                final.append(supplier_index)
+                temp = pd.concat([temp, supplier_match(words, filtered_df)], join='outer')
+            filtered_df = temp
+            # print("2", filtered_df.shape[0])
 
         elif key == 'Category':
-
+            temp = pd.DataFrame()
             # user may tick multiple categories
             for words in value:
-                temp_set = category_match(words, input_frame)
-                category_index = category_index.union(temp_set)
-            if len(category_index) != 0:
-                final.append(category_index)
+                print("3", category_match(words, filtered_df).shape[0])
+                temp = pd.concat([temp, category_match(words, filtered_df)], join='outer')
+            filtered_df = temp
+            # print("5", filtered_df.shape[0])
 
         elif key == 'Procurement Method':
             # user may enter one or more options
             for method in value:
-                temp_set = procurement_match(method, input_frame)
-                method_index |= temp_set
-            if len(method_index) != 0:
-                final.append(method_index)
+                filtered_df = procurement_match(method, filtered_df)
 
         # "Panel Arrangement" or
         # "Confidentiality Contract Flag" or
@@ -223,21 +215,12 @@ def find_match(keyword, input_frame):
         # "Consultancy Flag"
         # only have two options of "yes/no"
         elif key == ("Panel Arrangement" or "Confidentiality Contract Flag" or
-                   "Confidentiality Outputs Flag" or
-                    "Consultancy Flag"):
-            temp_set = input_frame[input_frame[key] == value]
-            # update the index
-            other_index |= temp_set
-            if len(other_index) != 0:
-                final.append(other_index)
+                     "Confidentiality Outputs Flag" or
+                     "Consultancy Flag"):
+            filtered_df = filtered_df[filtered_df[key] == value]
 
-    consolidate = final[0]
-    for i in final:
-        print("a",len(i))
-        consolidate &= i
-    # convert set to list for json package
-    filtered = list(consolidate)
-    return filtered
+    filtered_id = filtered_df.index.tolist()
+    return filtered_id
 
 
 # ---------------------------main----------------------------------
@@ -245,6 +228,6 @@ start_time = time.time()
 keyword = unpack("test2.json")
 output = find_match(keyword, df)
 print("output: ", len(output), output)
-print("time-consuming: ", time.time()-start_time)
+print("time-consuming: ", time.time() - start_time)
 # output_json = json.dumps({"Contract ID": output, "UI Command": keyword})
 # print(output_json)
