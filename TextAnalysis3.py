@@ -3,6 +3,10 @@ import json
 import numpy as np
 import time
 from fuzzywuzzy import process
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
 
 # open csv file as dataframe
 df = pd.read_csv('/Users/purple/Desktop/All CN.csv', low_memory=False)
@@ -36,7 +40,6 @@ Case 1 – What contracts have been awarded to universities from panels in 2014
         'Supplier Name':'',
         'Supplier ABN':''}
 '''
-
 
 def unpack(fromUI):
     """
@@ -114,13 +117,22 @@ def date_match(dateRange, input_frame):
     return target_time
 
 
-def category_match(key_word, input_dataframe):
-    category_list = []
-    # give score benchmark as 70 to cut down not useful data
-    temp = process.extractBests(key_word, input_dataframe['UNSPSC Title'], limit=input_dataframe.shape[0],
-                                score_cutoff=70)
-    for item in temp:
-        category_list.append(item[2])
+def category_match(word_list, input_dataframe):
+    """
+
+    @param word_list:
+    @param input_dataframe:
+    @return:
+    """
+    temp_set = set()
+    for word in word_list:
+        print(word)
+        if len(temp_set) == 0:
+            temp_set |= index_dict[word]
+        else:
+            temp_set &= (index_dict[word])
+
+    category_list = list(temp_set)
     filtered_df = input_dataframe.loc[category_list]
     return filtered_df
 
@@ -190,9 +202,8 @@ def find_match(keyword, input_frame):
         elif key == 'Category':
             temp = pd.DataFrame()
             # user may tick multiple categories
-            for words in value:
                 # print("3", category_match(words, filtered_df).shape[0])
-                temp = pd.concat([temp, category_match(words, filtered_df)], join='outer')
+            temp = pd.concat([temp, category_match(value, filtered_df)], join='outer')
             # return new dataframe as base for next filter
             filtered_df = temp
             # print("5", filtered_df.shape[0])
@@ -200,9 +211,37 @@ def find_match(keyword, input_frame):
     filtered_id = filtered_df.index.tolist()
     return filtered_id
 
-
 # ---------------------------main----------------------------------
 start_time = time.time()
-keyword = unpack("test4.json")
+# unique title in column
+# convert column to string
+temp_df = df['UNSPSC Title'].apply(str)
+# convert all to lower case
+temp_df = temp_df.apply(str.lower)
+lemma = nltk.wordnet.WordNetLemmatizer()
+temp_df = temp_df.apply(lemma.lemmatize)
+temp_df = temp_df.apply(word_tokenize)
+stop_words = set(stopwords.words('english'))
+filtered_bag = set()
+index_dict = dict()
+
+
+for i in range(temp_df.shape[0]):
+    for word in temp_df[i]:
+        if word not in stop_words:
+            if word not in filtered_bag:
+                filtered_bag.add(word)
+                index_dict[word] = set()
+                # add index to the set
+                index_dict[word].add(i)
+            else:
+                index_dict[word].add(i)
+
+
+keyword = unpack("test2.json")
 output = find_match(keyword, df)
-print("time-consuming: {}%" , time.time() - start_time)
+print("output:", output)
+
+# print("length",len(filtered_bag))
+# print("index_ dict:", type(index_dict), index_dict)
+print("time-consuming: ", time.time() - start_time)
