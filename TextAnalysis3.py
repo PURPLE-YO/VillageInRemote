@@ -1,3 +1,13 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+'''
+    Author: Jianying Zhang
+    Date created: 19/04/2018
+    Date last modified: 24/04/2018
+    Python Version: 3.6
+'''
+
 import pandas as pd
 import json
 import numpy as np
