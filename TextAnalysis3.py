@@ -7,7 +7,6 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-
 # open csv file as dataframe
 df = pd.read_csv('/Users/purple/Desktop/All CN.csv', low_memory=False)
 
@@ -40,6 +39,7 @@ Case 1 – What contracts have been awarded to universities from panels in 2014
         'Supplier Name':'',
         'Supplier ABN':''}
 '''
+
 
 def unpack(fromUI):
     """
@@ -117,21 +117,35 @@ def date_match(dateRange, input_frame):
     return target_time
 
 
-def category_match(word_list, input_dataframe):
+def category_multi_match(word_list, input_dataframe):
     """
-
-    @param word_list:
+    phrase match e.g Health services
+    @param word_list: phrases splited into word list
     @param input_dataframe:
     @return:
     """
     temp_set = set()
     for word in word_list:
-        print(word)
+        # initial union with empty set
         if len(temp_set) == 0:
-            temp_set |= index_dict[word]
+            temp_set = temp_set.union(index_dict[word])
+        # filtered unnecessary index
         else:
-            temp_set &= (index_dict[word])
+            temp_set = temp_set.intersection(index_dict[word])
+    # final list return
+    category_list = list(temp_set)
+    # filtered dataframe return
+    filtered_df = input_dataframe.loc[category_list]
+    return filtered_df
 
+
+def category_match(single_word, input_dataframe):
+    """single word match for category
+    @param single_word:
+    @param input_dataframe:
+    @return:
+    """
+    temp_set = index_dict[single_word]
     category_list = list(temp_set)
     filtered_df = input_dataframe.loc[category_list]
     return filtered_df
@@ -202,19 +216,27 @@ def find_match(keyword, input_frame):
         elif key == 'Category':
             temp = pd.DataFrame()
             # user may tick multiple categories
-                # print("3", category_match(words, filtered_df).shape[0])
-            temp = pd.concat([temp, category_match(value, filtered_df)], join='outer')
+            for words in value:
+                # phrase input (e.g health services)
+                if len(words.split(' ')) > 1:
+                    # join a list of dataframes
+                    phrase_list = words.split(' ')
+                    temp = pd.concat([temp, category_multi_match(phrase_list, filtered_df)], join='outer')
+                # for single word search and combine to previous dataframe
+                else:
+                    temp = pd.concat([temp, category_match(words, filtered_df)], join='outer')
             # return new dataframe as base for next filter
             filtered_df = temp
-            # print("5", filtered_df.shape[0])
 
     filtered_id = filtered_df.index.tolist()
     return filtered_id
 
+
 # ---------------------------main----------------------------------
 start_time = time.time()
-# unique title in column
 # convert column to string
+
+# preprocess data for dictionary builder
 temp_df = df['UNSPSC Title'].apply(str)
 # convert all to lower case
 temp_df = temp_df.apply(str.lower)
@@ -225,7 +247,7 @@ stop_words = set(stopwords.words('english'))
 filtered_bag = set()
 index_dict = dict()
 
-
+# build dictionary with token
 for i in range(temp_df.shape[0]):
     for word in temp_df[i]:
         if word not in stop_words:
@@ -237,11 +259,8 @@ for i in range(temp_df.shape[0]):
             else:
                 index_dict[word].add(i)
 
-
 keyword = unpack("test2.json")
 output = find_match(keyword, df)
-print("output:", output)
+print(df.loc[output]['UNSPSC Title'])
 
-# print("length",len(filtered_bag))
-# print("index_ dict:", type(index_dict), index_dict)
 print("time-consuming: ", time.time() - start_time)
