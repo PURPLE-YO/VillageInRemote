@@ -70,16 +70,6 @@ def unpack(fromUI):
     else:
         del command['Source']
         return command
-        # try:
-        #     # find the target keyword in which certain column
-        #     for key, value in command.items():
-        #         if value is not None:
-        #             keyword[key] = value
-        #     return keyword
-        # except Exception as inst:
-        #     print(type(inst))  # the exception instance
-        #     print(inst.args)  # arguments stored in .args
-        #     print(inst)
 
 
 # match the keyword of supplier
@@ -173,6 +163,19 @@ def procurement_match(key_word, input_dataframe):
     return matched
 
 
+def value_match(valueRange, input_dataframe):
+    if valueRange['Lower Bound'] == valueRange['Upper Bound']:
+        # convert format to float64 to match with dataframe
+        exact_value = np.float64(valueRange['Lower Bound'])
+        target_value = input_dataframe[input_dataframe['Value'] == exact_value]
+    else:
+        # convert format to float64 to match with dataframe
+        low = np.float64(valueRange['Lower Bound'])
+        high = np.float64(valueRange['Upper Bound'])
+        target_value = input_dataframe[(input_dataframe['Value'] <= high) & (input_dataframe['Value'] >= low)]
+    return target_value
+
+
 def find_match(keyword, input_frame):
     """
     Apply all filters according to UI sent command
@@ -185,7 +188,6 @@ def find_match(keyword, input_frame):
             dateRange = value[0]
             # return new dataframe as base for next filter
             filtered_df = date_match(dateRange, filtered_df)
-            # print("1", filtered_df.shape[0])
 
         elif key == "Supplier Name":
             temp = pd.DataFrame()
@@ -222,6 +224,11 @@ def find_match(keyword, input_frame):
                 temp = pd.concat([temp, supplier_match(words, filtered_df)], join='outer')
             # return new dataframe as base for next filter
             filtered_df = temp
+
+        elif key == 'ValueRange':
+            valueRange = value[0]
+            # return new dataframe as base for next filter
+            filtered_df = value_match(valueRange, filtered_df)
 
         elif key == 'Category':
             temp = pd.DataFrame()
@@ -271,6 +278,6 @@ for i in range(temp_df.shape[0]):
 
 keyword = unpack("test2.json")
 output = find_match(keyword, df)
-print(df.loc[output]['UNSPSC Title'])
+print(df.loc[output]['Value'])
 
 print("time-consuming: ", time.time() - start_time)
