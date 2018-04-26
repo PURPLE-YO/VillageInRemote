@@ -276,9 +276,9 @@ temp_df = temp_df.apply(lemma.lemmatize)
 temp_df = temp_df.apply(word_tokenize)
 stop_words = set(stopwords.words('english'))
 filtered_bag = set()
-# create dictionary
+# create dictionary within the scope of whole program for reference
 index_dict = dict()
-# store all the keys into a set for match
+# store all the keys into a set for match within the scope of whole program for reference
 keys_set = set(index_dict.keys())
 
 # build dictionary with token
