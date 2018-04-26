@@ -16,6 +16,7 @@ from fuzzywuzzy import process
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.corpus import wordnet as wn
 
 # open csv file as dataframe
 df = pd.read_csv('/Users/purple/Desktop/All CN.csv', low_memory=False)
@@ -138,6 +139,16 @@ def category_multi_match(word_list, input_dataframe):
     filtered_df = input_dataframe.loc[category_list]
     return filtered_df
 
+# find synonyms with the keyword input
+# catch union set to return all related titles
+def find_synonyms(input_word, keys_set):
+    syn_set = wn.synsets(input_word)
+    temp_set = set()
+    for word_set in syn_set:
+        temp_set |= set(word_set.lemma_names())
+    intersection = keys_set & temp_set
+    return intersection
+
 
 def category_match(single_word, input_dataframe):
     """single word match for category
@@ -145,7 +156,10 @@ def category_match(single_word, input_dataframe):
     @param input_dataframe:
     @return:
     """
-    temp_set = index_dict[single_word]
+    temp_set = set()
+    synonyms = find_synonyms(single_word, keys_set)
+    for word in synonyms:
+        temp_set |= index_dict[word]
     category_list = list(temp_set)
     filtered_df = input_dataframe.loc[category_list]
     return filtered_df
@@ -262,7 +276,10 @@ temp_df = temp_df.apply(lemma.lemmatize)
 temp_df = temp_df.apply(word_tokenize)
 stop_words = set(stopwords.words('english'))
 filtered_bag = set()
+# create dictionary
 index_dict = dict()
+# store all the keys into a set for match
+keys_set = set(index_dict.keys())
 
 # build dictionary with token
 for i in range(temp_df.shape[0]):
@@ -275,6 +292,8 @@ for i in range(temp_df.shape[0]):
                 index_dict[word].add(i)
             else:
                 index_dict[word].add(i)
+
+
 
 keyword = unpack("test2.json")
 output = find_match(keyword, df)
