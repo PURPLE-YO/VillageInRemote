@@ -109,11 +109,24 @@ def date_match(dateRange, input_frame):
         target_time = input_frame[input_frame['Start Date'] == exact_date]
     # if search a range
     else:
-        # convert datatype to datetime64, match the data in dataframe
-        start = np.datetime64(dateRange['Start Date'])
-        end = np.datetime64(dateRange['End Date'])
-        # mask target_time
-        target_time = input_frame[(input_frame['Start Date'] <= end) & (input_frame['Start Date'] >= start)]
+        # check if only one parameter received
+        if dateRange['Start Date'] == '' or dateRange['End Date'] == '':
+            # only start date specified, return the data from input date to the most recent
+            if dateRange['End Date'] == '':
+                # convert datatype to datetime64, match the data in dataframe
+                start = np.datetime64(dateRange['Start Date'])
+                target_time = input_frame[input_frame['Start Date'] >= start]
+            # only end date specified, return all the data before input date
+            else:
+                # convert datatype to datetime64, match the data in dataframe
+                end = np.datetime64(dateRange['End Date'])
+                target_time = input_frame[input_frame['Start Date'] <= end]
+        else:
+            # convert datatype to datetime64, match the data in dataframe
+            start = np.datetime64(dateRange['Start Date'])
+            end = np.datetime64(dateRange['End Date'])
+            # mask target_time
+            target_time = input_frame[(input_frame['Start Date'] <= end) & (input_frame['Start Date'] >= start)]
     # return filtered dataframe
     return target_time
 
@@ -138,6 +151,7 @@ def category_multi_match(word_list, input_dataframe):
     # filtered dataframe return
     filtered_df = input_dataframe.loc[category_list]
     return filtered_df
+
 
 # find synonyms with the keyword input
 # catch union set to return all related titles
@@ -212,7 +226,6 @@ def find_match(keyword, input_frame):
                 temp = pd.concat([temp, supplier_match(words, filtered_df)], join='outer')
             # return new dataframe as base for next filter
             filtered_df = temp
-            # print("2", filtered_df.shape[0])
 
         elif key == 'Procurement Method':
             # user may enter one or more options
@@ -292,8 +305,6 @@ for i in range(temp_df.shape[0]):
                 index_dict[word].add(i)
             else:
                 index_dict[word].add(i)
-
-
 
 keyword = unpack("test2.json")
 output = find_match(keyword, df)
