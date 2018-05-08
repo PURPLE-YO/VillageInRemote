@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="assets/img/favicon.png">
+
+	<title>QuillPro - Bootstrap 4 Dashboard Template</title>
+
+	<!-- Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&amp;subset=latin-ext" rel="stylesheet">
+
+	<!-- CSS - REQUIRED - START -->
+	<!-- Batch Icons -->
+	<link rel="stylesheet" href="assets/fonts/batch-icons/css/batch-icons.css">
+	<!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="assets/css/bootstrap/bootstrap.min.css">
+	<!-- Material Design Bootstrap -->
+	<link rel="stylesheet" href="assets/css/bootstrap/mdb.min.css">
+	<!-- Custom Scrollbar -->
+	<link rel="stylesheet" href="assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.min.css">
+	<!-- Hamburger Menu -->
+	<link rel="stylesheet" href="assets/css/hamburgers/hamburgers.css">
+
+	<!-- CSS - REQUIRED - END -->
+
+	<!-- CSS - DEMO - START -->
+	<link rel="stylesheet" href="assets/demo/css/ui-icons-batch-icons.css">
+	<!-- CSS - DEMO - END -->
+
+	<!-- CSS - OPTIONAL - START -->
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.min.css">
+
+	<!-- CSS - OPTIONAL - END -->
+
+	<!-- QuillPro Styles -->
+	<link rel="stylesheet" href="assets/css/quillpro/quillpro.css">
+</head>
+
+<body>
+
+	<div class="container-fluid">
+		<div class="row">
+			<nav id="sidebar" class="px-0 bg-dark bg-gradient sidebar">
+				<ul class="nav nav-pills flex-column">
+					<li class="logo-nav-item">
+						<a class="navbar-brand" href="#">
+							<img src="assets/img/logo_dark.png" width="180" height="65" alt="QuillPro">
+						</a>
+
+					</li>
+					<li>
+						<h6 class="nav-header">General</h6>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="index.html">
+							<i class="batch-icon batch-icon-browser-alt"></i>
+							Dashboard <span class="sr-only">(current)</span>
+						</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="Upload_file.html">
+							<i class="batch-icon batch-icon-star"></i>
+							Upload File
+						</a>
+					</li>
+				</ul>
+
+
+			</nav>
+			<div class="right-column">
+				<nav class="navbar navbar-expand-lg navbar-light bg-white">
+					<a class="navbar-brand d-block d-sm-block d-md-block d-lg-none" href="#">
+						<img src="assets/img/logo-dark.png" width="145" height="32.3" alt="QuillPro">
+					</a>
+					<button class="hamburger hamburger--slider" type="button" data-target=".sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle Sidebar">
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</button>
+					<!-- Added Mobile-Only Menu -->
+					<ul class="navbar-nav ml-auto mobile-only-control d-block d-sm-block d-md-block d-lg-none">
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" id="navbar-notification-search-mobile" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+								<i class="batch-icon batch-icon-search"></i>
+							</a>
+							<ul class="dropdown-menu dropdown-menu-fullscreen" aria-labelledby="navbar-notification-search-mobile">
+								<li>
+									<form class="form-inline my-2 my-lg-0 no-waves-effect">
+										<div class="input-group">
+											<input type="text" class="form-control" placeholder="Search for..." aria-label="Search for..." aria-describedby="basic-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-primary btn-gradient waves-effect waves-light" type="button">
+													<i class="batch-icon batch-icon-search"></i>
+												</button>
+											</div>
+										</div>
+									</form>
+								</li>
+							</ul>
+						</li>
+					</ul>
+
+					<!--  DEPRECATED CODE:
+						<div class="navbar-collapse" id="navbarSupportedContent">
+					-->
+					<!-- USE THIS CODE Instead of the Commented Code Above -->
+					<!-- .collapse added to the element -->
+
+				</nav>
+				<main class="main-content p-5" role="main">
+					<div class="row">
+						<div class="col-md-12">
+							<h1>Further Query</h1>
+						</div>
+					</div>
+					<div class="row mb-5">
+						<div class="col-md-12">
+							<div class="card">
+								<div class="card-body">
+									<div class="row">
+										<div class="col-lg-12">
+											
+											<form>
+												<h3>Categories Information</h3>
+
+												<div class="form-group">
+													<label for="exampleFormControlSelect1">Target industry select</label>
+													<select class="form-control" id="exampleFormControlSelect1">
+														<option>-- Select one Category --</option>
+														<option>Health</option>
+														<option>Computer Science</option>
+														<option>Accounting and Auditing</option>
+														<option>Professional Engineering service</option>
+														<option>Management and Business Professionals and Administrative Services</option>
+														<option>None</option>
+													</select>
+													<br>
+												</div>
+												<div class="form-group">
+
+												</div>
+												<div class="form-group">
+													<label for="exampleFormControlTextarea1">New Category creation</label>
+													<input class="form-control form-control-lg" type="text" placeholder="Type in your Category">
+													<small id="userHelp" class="form-text text-muted">Inputs are splitted by comma. e.g. "industry1, industry2, ..."</small>
+													<br>
+												</div>
+	                                            <h3>Contract Information</h3>
+											
+												
+												<div class="form-group">
+													<label for="exampleFormControlTextarea1">Contract ID</label>
+													<input class="form-control form-control-lg" type="text" placeholder="AB09231564">
+												</div>
+
+												<div class="form-group">
+													<select class="form-control form-control-lg">
+														<option>Contract ID Select</option>
+													</select>
+												</div>
+
+											    <div class="form-group mb-3">
+												    <label class="control-label" for="money-field">Money</label>
+												<div class="input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text" id="inputGroupPrepend-2">
+															$
+														</span>
+													</div>
+													<input type="text" class="money form-control" autocomplete="off" placeholder="123,456,789.00" aria-describedby="inputGroupPrepend-2">
+												</div>
+											    </div>
+											<br>
+											<br>
+											<br>
+
+											    <h3>Supplier Information</h3>
+											
+												    <div class="form-group">
+													    <label for="exampleFormControlTextarea1">Type in supplier name</label>
+														<input class="form-control form-control-lg" type="text" placeholder="Type in Supplier you want">
+													    <small id="userHelp" class="form-text text-muted">Inputs are splitted by "/". e.g. "Melbourne/University of Melbourne"</small>
+													    <br>
+												    </div>
+											    
+											        <div>
+											    	    <button class="btn btn-primary" type="submit">Submit form</button>
+											        </div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>	
+						</div>
+					</div>	
+				</main>
+			</div>
+		</div>
+	</div>
+
+	<!-- SCRIPTS - REQUIRED START -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<!-- Bootstrap core JavaScript -->
+	<!-- JQuery -->
+	<script type="text/javascript" src="assets/js/jquery/jquery-3.1.1.min.js"></script>
+	<!-- Popper.js - Bootstrap tooltips -->
+	<script type="text/javascript" src="assets/js/bootstrap/popper.min.js"></script>
+	<!-- Bootstrap core JavaScript -->
+	<script type="text/javascript" src="assets/js/bootstrap/bootstrap.min.js"></script>
+	<!-- MDB core JavaScript -->
+	<script type="text/javascript" src="assets/js/bootstrap/mdb.min.js"></script>
+	<!-- Velocity -->
+	<script type="text/javascript" src="assets/plugins/velocity/velocity.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/velocity/velocity.ui.min.js"></script>
+	<!-- Custom Scrollbar -->
+	<script type="text/javascript" src="assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+	<!-- jQuery Visible -->
+	<script type="text/javascript" src="assets/plugins/jquery_visible/jquery.visible.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript" src="assets/js/misc/ie10-viewport-bug-workaround.js"></script>
+
+	<!-- SCRIPTS - REQUIRED END -->
+
+	<!-- SCRIPTS - OPTIONAL START -->
+	<!-- Image Placeholder -->
+	<script type="text/javascript" src="assets/js/misc/holder.min.js"></script>
+	<!-- SCRIPTS - OPTIONAL END -->
+
+	<!-- QuillPro Scripts -->
+	<script type="text/javascript" src="assets/js/scripts.js"></script>
+</body>
+</html>

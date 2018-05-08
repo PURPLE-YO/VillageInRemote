@@ -1,0 +1,377 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="{% static "assets/img/favicon.png" %}">
+
+	<title>Data_Visual - Query Page</title>
+
+	<!-- Fonts -->
+	<link href="{% static "https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&amp;subset=latin-ext" %}" rel="stylesheet">
+
+	<!-- CSS - REQUIRED - START -->
+	<!-- Batch Icons -->
+	<link rel="stylesheet" href="{% static "assets/fonts/batch-icons/css/batch-icons.css" %}">
+	<!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="{% static "assets/css/bootstrap/bootstrap.min.css" %}">
+	<!-- Material Design Bootstrap -->
+	<link rel="stylesheet" href="{% static "assets/css/bootstrap/mdb.min.css" %}">
+	<!-- Custom Scrollbar -->
+	<link rel="stylesheet" href="{% static "assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.min.css" %}">
+	<!-- Hamburger Menu -->
+	<link rel="stylesheet" href="{% static "assets/css/hamburgers/hamburgers.css" %}">
+
+	<!-- CSS - REQUIRED - END -->
+
+	<!-- CSS - DEMO - START -->
+	<link rel="stylesheet" href="{% static "assets/demo/css/ui-icons-batch-icons.css" %}">
+	<!-- CSS - DEMO - END -->
+
+	<!-- CSS - OPTIONAL - START -->
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="{% static "assets/fonts/font-awesome/css/font-awesome.min.css" %}">
+
+	<!-- CSS - OPTIONAL - END -->
+
+	<!-- QuillPro Styles -->
+	<link rel="stylesheet" href="{% static "assets/css/quillpro/quillpro.css" %}">
+</head>
+
+<body>
+
+	<div class="container-fluid">
+		<div class="row">
+			<nav id="sidebar" class="px-0 bg-dark bg-gradient sidebar">
+				<ul class="nav nav-pills flex-column">
+					<li class="logo-nav-item">
+						<a class="navbar-brand" href="#">
+							<img src="{% static "assets/img/logo_dark.png" %}" width="175" height="175" alt="QuillPro">
+						</a>
+
+					</li>
+					<li>
+						<h6 class="nav-header">General</h6>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/login">
+							<i class="batch-icon batch-icon-browser-alt"></i>
+							Logout 
+						</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="/upload">
+							<i class="batch-icon batch-icon-star"></i>
+							Upload File
+						</a>
+					</li>
+
+<!-- 					<li class="nav-item">
+						<a class="nav-link" href="query_page1.html">
+							<i class="batch-icon batch-icon-star"></i>
+							Further Query
+						</a>
+					</li> -->
+				</ul>
+
+
+			</nav>
+			<div class="right-column">
+
+				<main class="main-content p-5" role="main">
+					<div class="row">
+						<div class="col-md-12">
+							<h1>Quick Query</h1>
+						</div>
+					</div>
+					<div class="row mb-5">
+						<div class="col-md-12">
+							<div class="card">
+								<div class="card-body">
+									<div class="row">
+										<div class="col-lg-12">
+											
+											<form action="" method = 'POST'>
+
+                                                <h3>From which view to group data</h3>
+
+											    <div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+													        <label for="exampleFormControlSelect1">Data views</label>
+													        <select class="form-control" name="keywords">
+														        <option>-- Select one Method --</option>
+														        <option>Agency Name</option>
+														        <option>UNSPSC Title</option>
+														        <option>Supplier Name</option>
+													        </select>													        
+													    </div>
+													</div>
+												</div>
+												
+
+
+												<h3>Categories Information</h3>
+
+												<div>
+													<label for="exampleFormControlTextarea1">Category input</label>
+													<input class="form-control form-control-lg" type="text" name="category" placeholder="Type in your Category here...">
+													<small name="userHelp" class="form-text text-muted">Inputs are splitted by comma. e.g. "industry1, industry2, ..."</small>
+													<br>
+												</div>
+
+												<div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+													        <label for="exampleFormControlSelect1">Precurement Method</label>
+													        <select class="form-control" name="Precurement">
+														        <option>-- Select one Method --</option>
+														        <option>Open tender</option>
+														        <option>Limited tender</option>
+														        <option>Prequalified tender</option>
+													        </select>
+													        <br>
+													    </div>
+													</div>
+												</div>
+												                                            
+
+										        <br>
+										        <br>
+
+	                                            <h3>Contract Information</h3>
+											
+												<div>
+													<label for="exampleFormControlTextarea1">Agency Name</label>
+													<input class="form-control form-control-lg" type="text" name="agency" placeholder="Type in your Agency here... (e.g. Administrative Appeals Tribunal)">
+													<br>
+												</div>
+												<div >
+													<label for="exampleFormControlTextarea2">Contract ID</label>
+													<input class="form-control form-control-lg" type="text" name="contract_ID" placeholder="Contract1234567">
+												</div>
+												<br>
+
+                                                <div class="row pb-5">
+											        <div class="col-md-6">
+											            <div class="form-group mb-3">
+												            <label class="control-label" for="money-field">Bottom value</label>
+												        <div class="input-group">
+													        <div class="input-group-prepend">
+														        <span class="input-group-text" name="valueb">
+															    $
+														        </span>
+													        </div>
+													        <input type="text" class="money form-control" autocomplete="off" placeholder="123,456.00" aria-describedby="inputGroupPrepend-2" name="valueB">
+												        </div>
+											            </div>
+                                                    </div>
+											        <div class="col-md-6">
+											            <div class="form-group mb-3">
+												            <label class="control-label" for="money-field">Top Value</label>
+												        <div class="input-group">
+													        <div class="input-group-prepend">
+														        <span class="input-group-text" name="valuet">
+															    $
+														        </span>
+													        </div>
+													        <input type="text" class="money form-control" autocomplete="off" placeholder="123,456,789.00" aria-describedby="inputGroupPrepend-2" name="valueT">
+												        </div>
+											            </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="row pb-5">
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+												        <label class="control-label active">Start Date</label>
+												        <input type="text" class="date form-control" autocomplete="off" placeholder="YYYY-MM-DD" maxlength="10" name="Start_date">
+												    </div>
+												</div>
+												<div class="col-md-6">
+												    <div class="form-group mb-3"> 
+												        <label class="control-label active">End Date</label>
+												        <input type="text" class="date form-control" autocomplete="off" placeholder="YYYY-MM-DD" maxlength="10" name="End_date">
+											        </div>  
+											    </div>
+											    </div>
+
+
+                                                <div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+												            <label class="control-label active">Panel arrangement</label>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="p-radio" value="yes">
+													            <label class="form-check-label" for="inlineRadio1">Yes</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="p-radio" value="no">
+													            <label class="form-check-label" for="inlineRadio2">No</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="p-radio" value="none">
+													            <label class="form-check-label" for="inlineRadio1">None</label>
+												            </div>
+												        </div>
+												    </div>
+												</div>
+
+												<div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+												            <label class="control-label active">Confidentiality Contract Flag</label>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="con-radio" value="yes">
+													            <label class="form-check-label" for="inlineRadio1">Yes</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="con-radio" value="no">
+													            <label class="form-check-label" for="inlineRadio2">No</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="con-radio" value="none">
+													            <label class="form-check-label" for="inlineRadio1">None</label>
+												            </div>
+												        </div>
+												    </div>
+												</div>
+
+
+												<div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+												            <label class="control-label active">Confidentiality Outputs Flag</label>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="out-radio" value="yes">
+													            <label class="form-check-label" for="inlineRadio1">Yes</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="out-radio" value="no">
+													            <label class="form-check-label" for="inlineRadio2">No</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="out-radio" value="none">
+													            <label class="form-check-label" for="inlineRadio1">None</label>
+												            </div>
+												        </div>
+												    </div>
+												</div>
+
+												<div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+												            <label class="control-label active">Consultancy Flag</label>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="Consultancy-radio" value="yes">
+													            <label class="form-check-label" for="inlineRadio1">Yes</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="Consultancy-radio" value="no">
+													            <label class="form-check-label" for="inlineRadio2">No</label>
+												            </div>
+												            <div class="form-check form-check-inline">
+													            <input class="form-check-input" type="radio" name="Consultancy-radio" value="none">
+													            <label class="form-check-label" for="inlineRadio1">None</label>
+												            </div>
+												        </div>
+												    </div>
+												</div>
+
+											    <h3>Supplier Information</h3>
+											
+												    <div class="form-group">
+													    <label for="exampleFormControlTextarea1">Type in supplier name</label>
+														<input class="form-control form-control-lg" type="text" placeholder="Type in Supplier you want" name="supplier_name">
+													    <small id="userHelp" class="form-text text-muted">Inputs are splitted by "/". e.g. "Melbourne/University of Melbourne"</small>
+													    <br>
+												    </div>
+												    <br>
+											    <h3>Comparison</h3>
+
+											    <div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+                                                        	<label class="control-label active">Please type in the section you wish to compare</label>
+                                                        	<select class="form-control" name="compare">
+														        <option>-- Select one Method --</option>
+														        <option>Agency Name</option>
+														        <option>Category</option>
+														        <option>Supplier Name</option>
+													        </select>
+													    </div>
+													</div>
+												</div>
+
+
+											    <div class="row pb-5">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+                                                        	<label for="exampleFormControlTextarea1">Name 1</label>
+													        <input class="form-control form-control-lg" type="text" name="name1" placeholder="Type in compare name1 here... (e.g. Administrative Appeals Tribunal)">
+													        <br>
+													    </div>
+													</div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+                                                        	<label for="exampleFormControlTextarea1">Name 2</label>
+													        <input class="form-control form-control-lg" type="text" name="name2" placeholder="Type in compare name2 here... (e.g. Administrative Appeals Tribunal)">
+													        <br>
+													    </div>
+													</div>
+												</div>
+
+
+											    <div class="form-group">
+											    	<button class="btn btn-primary" type="submit" name="submit">Submit form</button>
+											    </div>
+
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>	
+						</div>
+					</div>	
+				</main>
+			</div>
+		</div>
+	</div>
+
+	<!-- SCRIPTS - REQUIRED START -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<!-- Bootstrap core JavaScript -->
+	<!-- JQuery -->
+	<script type="text/javascript" src="{% static "assets/js/jquery/jquery-3.1.1.min.js" %}"></script>
+	<!-- Popper.js - Bootstrap tooltips -->
+	<script type="text/javascript" src="{% static "assets/js/bootstrap/popper.min.js" %}"></script>
+	<!-- Bootstrap core JavaScript -->
+	<script type="text/javascript" src="{% static "assets/js/bootstrap/bootstrap.min.js" %}"></script>
+	<!-- MDB core JavaScript -->
+	<script type="text/javascript" src="{% static "assets/js/bootstrap/mdb.min.js" %}"></script>
+	<!-- Velocity -->
+	<script type="text/javascript" src="{% static "assets/plugins/velocity/velocity.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "assets/plugins/velocity/velocity.ui.min.js" %}"></script>
+	<!-- Custom Scrollbar -->
+	<script type="text/javascript" src="{% static "assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.concat.min.js" %}"></script>
+	<!-- jQuery Visible -->
+	<script type="text/javascript" src="{% static "assets/plugins/jquery_visible/jquery.visible.min.js" %}"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript" src="{% static "assets/js/misc/ie10-viewport-bug-workaround.js" %}"></script>
+
+	<!-- SCRIPTS - REQUIRED END -->
+
+	<!-- SCRIPTS - OPTIONAL START -->
+	<!-- Image Placeholder -->
+	<script type="text/javascript" src="{% static "assets/js/misc/holder.min.js" %}"></script>
+	<!-- SCRIPTS - OPTIONAL END -->
+
+	<!-- QuillPro Scripts -->
+	<script type="text/javascript" src="{% static "assets/js/scripts.js" %}"></script>
+</body>
+</html>
