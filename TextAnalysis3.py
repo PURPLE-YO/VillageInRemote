@@ -229,8 +229,18 @@ def find_match(keyword, input_frame):
 
         elif key == 'Procurement Method':
             # user may enter one or more options
-            for method in value:
-                filtered_df = procurement_match(method, filtered_df)
+            # if only one method input
+            temp_list = []
+            # only one method input
+            if len(value) == 1:
+                filtered_df = procurement_match(value[0], filtered_df)
+            # multiple methods input
+            else:
+                for method in value:
+                    temp_df = procurement_match(method, filtered_df)
+                    temp_list.append(temp_df)
+                # return new filtered dataframe
+                filtered_df = pd.concat(temp_list)
 
         # "Panel Arrangement" or
         # "Confidentiality Contract Flag" or
@@ -308,6 +318,6 @@ for i in range(temp_df.shape[0]):
 
 keyword = unpack("test2.json")
 output = find_match(keyword, df)
-print(df.loc[output]['Value'])
+print(df.loc[output]['Procurement Method'])
 
 print("time-consuming: ", time.time() - start_time)
