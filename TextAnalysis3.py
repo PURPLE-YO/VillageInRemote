@@ -139,15 +139,18 @@ def category_multi_match(word_list, input_dataframe):
     @return:
     """
     temp_set = set()
-    for word in word_list:
+    for words in word_list:
         # initial union with empty set
-        if len(temp_set) == 0:
-            temp_set = temp_set.union(index_dict[word])
-        # filtered unnecessary index
-        else:
-            temp_set = temp_set.intersection(index_dict[word])
+        word = words.lower()
+        if word not in stop_words:
+            if len(temp_set) == 0:
+                temp_set = temp_set.union(index_dict[word])
+            # filtered unnecessary index
+            else:
+                temp_set = temp_set.intersection(index_dict[word])
     # final list return
     category_list = list(temp_set)
+    print(category_list)
     # filtered dataframe return
     filtered_df = input_dataframe.loc[category_list]
     return filtered_df
@@ -156,6 +159,7 @@ def category_multi_match(word_list, input_dataframe):
 # find synonyms with the keyword input
 # catch union set to return all related titles
 def find_synonyms(input_word, keys_set):
+    # synonyms words set retrieved from WordNet
     syn_set = wn.synsets(input_word)
     temp_set = set()
     for word_set in syn_set:
@@ -165,13 +169,16 @@ def find_synonyms(input_word, keys_set):
 
 
 def category_match(single_word, input_dataframe):
-    """single word match for category
+    """
+    single word match for category
     @param single_word:
     @param input_dataframe:
     @return:
     """
-    temp_set = set()
+    temp_set = index_dict[single_word]
+    # find synonyms of single_word
     synonyms = find_synonyms(single_word, keys_set)
+    # check the word in synonyms set to find similar
     for word in synonyms:
         temp_set |= index_dict[word]
     category_list = list(temp_set)
@@ -197,10 +204,21 @@ def value_match(valueRange, input_dataframe):
         exact_value = np.float64(valueRange['Lower Bound'])
         target_value = input_dataframe[input_dataframe['Value'] == exact_value]
     else:
-        # convert format to float64 to match with dataframe
-        low = np.float64(valueRange['Lower Bound'])
-        high = np.float64(valueRange['Upper Bound'])
-        target_value = input_dataframe[(input_dataframe['Value'] <= high) & (input_dataframe['Value'] >= low)]
+        # only one bound specified
+        if valueRange['Lower Bound'] == '' or valueRange['Upper Bound'] == '':
+            # only upper bound indicated, return the value smaller than the high
+            if valueRange['Lower Bound'] == '':
+                high = np.float64(valueRange['Upper Bound'])
+                target_value = input_dataframe[input_dataframe['Value'] <= high]
+            # only lower bound indicated, return the value larger that the low
+            else:
+                low = np.float64(valueRange['Lower Bound'])
+                target_value = input_dataframe[input_dataframe['Value'] >= low]
+        else:
+            # convert format to float64 to match with dataframe
+            low = np.float64(valueRange['Lower Bound'])
+            high = np.float64(valueRange['Upper Bound'])
+            target_value = input_dataframe[(input_dataframe['Value'] <= high) & (input_dataframe['Value'] >= low)]
     return target_value
 
 
@@ -210,80 +228,86 @@ def find_match(keyword, input_frame):
     @param keyword: dictionary -> {'column name': keyword}
     @return:
     """
-    filtered_df = input_frame
-    for key, value in keyword.items():
-        if key == "Date Range":
-            dateRange = value[0]
-            # return new dataframe as base for next filter
-            filtered_df = date_match(dateRange, filtered_df)
+    try:
+        filtered_df = input_frame
+        for key, value in keyword.items():
+            if key == "Date Range":
+                dateRange = value[0]
+                # return new dataframe as base for next filter
+                filtered_df = date_match(dateRange, filtered_df)
 
-        elif key == "Supplier Name":
-            temp = pd.DataFrame()
-            # may have multiple words input in supplier
-            # supplier1 OR supplier2 OR ...
-            # merge dataframe with different supplier name
-            for words in value:
-                temp = pd.concat([temp, supplier_match(words, filtered_df)], join='outer')
-            # return new dataframe as base for next filter
-            filtered_df = temp
+            elif key == "Supplier Name":
+                temp = pd.DataFrame()
+                # may have multiple words input in supplier
+                # supplier1 OR supplier2 OR ...
+                # merge dataframe with different supplier name
+                for words in value:
+                    temp = pd.concat([temp, supplier_match(words, filtered_df)], join='outer')
+                # return new dataframe as base for next filter
+                filtered_df = temp
 
-        elif key == 'Procurement Method':
-            # user may enter one or more options
-            # if only one method input
-            temp_list = []
-            # only one method input
-            if len(value) == 1:
-                filtered_df = procurement_match(value[0], filtered_df)
-            # multiple methods input
-            else:
-                for method in value:
-                    temp_df = procurement_match(method, filtered_df)
-                    temp_list.append(temp_df)
-                # return new filtered dataframe
-                filtered_df = pd.concat(temp_list)
-
-        # "Panel Arrangement" or
-        # "Confidentiality Contract Flag" or
-        # "Confidentiality Outputs Flag" or
-        # "Consultancy Flag"
-        # only have two options of "yes/no"
-        elif key == ("Panel Arrangement" or "Confidentiality Contract Flag" or
-                     "Confidentiality Outputs Flag" or
-                     "Consultancy Flag"):
-            filtered_df = filtered_df[filtered_df[key] == value]
-
-        elif key == "Supplier Name":
-            temp = pd.DataFrame()
-            # may have multiple words input in supplier
-            # supplier1 OR supplier2 OR ...
-            # merge dataframe with different supplier name
-            for words in value:
-                temp = pd.concat([temp, supplier_match(words, filtered_df)], join='outer')
-            # return new dataframe as base for next filter
-            filtered_df = temp
-
-        elif key == 'ValueRange':
-            valueRange = value[0]
-            # return new dataframe as base for next filter
-            filtered_df = value_match(valueRange, filtered_df)
-
-        elif key == 'Category':
-            temp = pd.DataFrame()
-            # user may tick multiple categories
-            for words in value:
-                # phrase input (e.g health services)
-                if len(words.split(' ')) > 1:
-                    # join a list of dataframes
-                    phrase_list = words.split(' ')
-                    temp = pd.concat([temp, category_multi_match(phrase_list, filtered_df)], join='outer')
-                # for single word search and combine to previous dataframe
+            elif key == 'Procurement Method':
+                # user may enter one or more options
+                # if only one method input
+                temp_list = []
+                # only one method input
+                if len(value) == 1:
+                    filtered_df = procurement_match(value[0], filtered_df)
+                # multiple methods input
                 else:
-                    temp = pd.concat([temp, category_match(words, filtered_df)], join='outer')
-            # return new dataframe as base for next filter
-            filtered_df = temp
+                    for method in value:
+                        temp_df = procurement_match(method, filtered_df)
+                        temp_list.append(temp_df)
+                    # return new filtered dataframe
+                    filtered_df = pd.concat(temp_list)
 
-    filtered_id = filtered_df.index.tolist()
-    return filtered_id
+            # "Panel Arrangement" or
+            # "Confidentiality Contract Flag" or
+            # "Confidentiality Outputs Flag" or
+            # "Consultancy Flag"
+            # only have two options of "yes/no"
+            elif key == ("Panel Arrangement" or "Confidentiality Contract Flag" or
+                         "Confidentiality Outputs Flag" or
+                         "Consultancy Flag"):
+                filtered_df = filtered_df[filtered_df[key] == value]
+
+            elif key == "Supplier Name":
+                temp = pd.DataFrame()
+                # may have multiple words input in supplier
+                # supplier1 OR supplier2 OR ...
+                # merge dataframe with different supplier name
+                for words in value:
+                    temp = pd.concat([temp, supplier_match(words, filtered_df)], join='outer')
+                # return new dataframe as base for next filter
+                filtered_df = temp
+
+            elif key == 'ValueRange':
+                valueRange = value[0]
+                # return new dataframe as base for next filter
+                filtered_df = value_match(valueRange, filtered_df)
+
+            elif key == 'Category':
+                temp = pd.DataFrame()
+                # user may tick multiple categories
+                for words in value:
+                    # phrase input (e.g health services)
+                    if len(words.split(' ')) > 1:
+                        # join a list of dataframes
+                        phrase_list = words.split(' ')
+                        temp = pd.concat([temp, category_multi_match(phrase_list, filtered_df)], join='outer')
+                    # for single word search and combine to previous dataframe
+                    else:
+                        # lower the case for search
+                        temp = pd.concat([temp, category_match(words.lower(), filtered_df)], join='outer')
+                # return new dataframe as base for next filter
+                filtered_df = temp
+
+        filtered_id = filtered_df.index.tolist()
+        return filtered_id
+    except KeyError:
+        print("Oops! No matched record found.")
+
+
 
 
 # ---------------------------main----------------------------------
@@ -302,7 +326,7 @@ filtered_bag = set()
 # create dictionary within the scope of whole program for reference
 index_dict = dict()
 # store all the keys into a set for match within the scope of whole program for reference
-keys_set = set(index_dict.keys())
+keys_set = index_dict.keys()
 
 # build dictionary with token
 for i in range(temp_df.shape[0]):
@@ -311,6 +335,7 @@ for i in range(temp_df.shape[0]):
             if word not in filtered_bag:
                 filtered_bag.add(word)
                 index_dict[word] = set()
+                # print(index_dict)
                 # add index to the set
                 index_dict[word].add(i)
             else:
@@ -318,6 +343,9 @@ for i in range(temp_df.shape[0]):
 
 keyword = unpack("test2.json")
 output = find_match(keyword, df)
-print(df.loc[output]['Procurement Method'])
+print(index_dict)
+print(keys_set)
+# print("filtered bag",filtered_bag)
+print(df.loc[output]['UNSPSC Title'])
 
 print("time-consuming: ", time.time() - start_time)
